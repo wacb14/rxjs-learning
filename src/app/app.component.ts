@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { timer } from 'rxjs';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,12 +11,12 @@ import { timer } from 'rxjs';
 export class AppComponent implements OnInit {
   title = 'rxjs-learning';
   ngOnInit(): void {
-    //-- Similar to setTimeout but with observables
-    const time = 3000;
-    const trigger = timer(time);
+    //-- Similar to setInterval but with observables
+    const time = 1000;
+    const trigger = interval(time);
 
-    trigger.subscribe(() =>
-      console.log(`This was triigered after ${time/1000} seconds`)
+    trigger.subscribe((n) =>
+      console.log(`This is triggered after ${n} seconds`)
     );
   }
 }
