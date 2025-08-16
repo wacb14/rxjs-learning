@@ -18,20 +18,21 @@ export class AppComponent implements OnInit {
       subscriber.complete();
     }, 1000);
   });
+  outputs: any[] = [];
 
   ngOnInit(): void {
-    console.log('just before subscribe');
+    this.outputs.push('just before subscribe');
     this.observable.subscribe({
-      next(x) {
-        console.log('got value ' + x);
+      next: (x) => {
+        this.outputs.push('got value ' + x);
       },
       error(err) {
         console.error('something wrong occurred: ' + err);
       },
-      complete() {
-        console.log('done');
+      complete: () => {
+        this.outputs.push('done');
       },
     });
-    console.log('just after subscribe');
+    this.outputs.push('just after subscribe');
   }
 }
