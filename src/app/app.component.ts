@@ -1,6 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { fromEvent, interval, switchMap } from 'rxjs';
+import {
+  EMPTY,
+  fromEvent,
+  interval,
+  map,
+  merge,
+  scan,
+  startWith,
+  switchMap,
+  takeWhile,
+} from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -10,13 +20,25 @@ import { fromEvent, interval, switchMap } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   title = 'rxjs-learning';
+  counter = 0;
 
   ngOnInit(): void {
-    //-- SwitchMap allows to interrupt the function that we are mapping
-    const count = fromEvent(document, 'click').pipe(
-      switchMap(() => interval(1000))
+    const pauseButton = document.getElementById('pause');
+    const resumeButton = document.getElementById('resume');
+
+    const intervalObs = interval(1000).pipe(map(() => -1));
+    const pause = fromEvent(pauseButton as any, 'click').pipe(map(() => false));
+    const resume = fromEvent(resumeButton as any, 'click').pipe(
+      map(() => true)
     );
-    //-- Every time we click on the document the counter restarts
-    count.subscribe((n) => console.log(n));
+
+    const timer = merge(pause, resume).pipe(
+      startWith(true),
+      switchMap((v) => (v ? intervalObs : EMPTY)),
+      scan((sum, i) => (i ? sum + i : sum), 10),
+      takeWhile((i) => i >= 0)
+    );
+
+    timer.subscribe((value: any) => (this.counter = value));
   }
 }
