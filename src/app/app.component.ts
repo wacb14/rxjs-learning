@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { forkJoin, interval, of, take, timeout } from 'rxjs';
+import { forkJoin } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
 
 @Component({
   selector: 'app-root',
@@ -12,13 +13,12 @@ export class AppComponent implements OnInit {
   title = 'rxjs-learning';
 
   ngOnInit(): void {
-    //-- The forkJoin operator returns the last value of each observable, waiting for the last observable that emits the last value (it ignores the previous values of each observable)
-    const fork = forkJoin([
-      of('Hola'),
-      interval(1000).pipe(take(2)),
-      of('Mundo').pipe(timeout(500)),
-    ]);
+    //-- A more complex example to make a directory of resources
+    const src = forkJoin({
+      google: ajax.getJSON('https://api.github.com/users/google'),
+      myGit: ajax.getJSON('https://api.github.com/users/wacb14'),
+    });
 
-    fork.subscribe((c) => console.log(c));
+    src.subscribe((res) => console.log(res));
   }
 }
