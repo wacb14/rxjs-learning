@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { delay, mergeMap, of } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
 
 @Component({
   selector: 'app-root',
@@ -12,12 +13,12 @@ export class AppComponent implements OnInit {
   title = 'rxjs-learning';
 
   ngOnInit(): void {
-    const values = of(2000, 1000, 3000);
-
-    //-- Similar to concatMap, but this does not wait for observers to finish their executions.
-    const merger = values.pipe(
-      mergeMap((v) => of(`Value ${v}`).pipe(delay(v)))
+    const sources = of(
+      ajax.getJSON('https://api.github.com/users/wacb14'),
+      ajax.getJSON('https://api.github.com/users/google')
     );
+
+    const merger = sources.pipe(mergeMap((v) => v));
 
     merger.subscribe((v) => console.log(v));
   }
